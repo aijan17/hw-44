@@ -1,31 +1,30 @@
-from random import random
-
+import random
 from django.shortcuts import render
 
 
-# Create your views here.
 def game_view(request):
     if request.method == 'GET':
         return render(request, "guess_num_view.html")
     if request.method == 'POST':
-        secret_numbs = random.sample(range(10), 4)
-        numbers = list(map(int, request.POST['numbers'][0].split(' ')))
-        result = ''
+        secret_numbs = random.sample(range(1, 10), 4)
+        numbers = list(map(int, request.POST['numbers'].split(' ')))
+
         if len(numbers) > 4 or len(numbers) < 4:
             return '`error: there must be exactly 4 numbers`'
 
         elif numbers == " ":
-            return ""
+            return render(request, "guess_num_view.html")
 
         elif numbers == secret_numbs:
-            return "You got it right "
+            return render(request, 'result_game_view.html', {"result": "You got it right"})
+
         for number in numbers:
             if number < 1 or number > 10:
-                result = "`number cant be less 1 and more 10`"
+                return render(request, 'result_game_view.html', {"result": "`number cant be less 1 and more 10`"})
 
         for i in range(len(numbers)):
             if numbers[i] in numbers[i+1:]:
-                result = '`error`'
+                return render(request, 'result_game_view.html', {"result": "`error`"})
 
         else:
             bulls = 0
@@ -50,4 +49,4 @@ def game_view(request):
                 if i == secret_numbs[3]:
                     cows += 1
 
-            result = f"You got  bulls: {bulls} and cows: {cows} "
+            return render(request, 'result_game_view.html', {"result": f"You got  bulls: {bulls} and cows: {cows} "})
